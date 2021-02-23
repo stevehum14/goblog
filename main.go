@@ -22,9 +22,9 @@ var db *sql.DB
 func initDB() {
 	var err error
 	config := mysql.Config{
-		User:                 "homestead",
-		Passwd:               "secret",
-		Addr:                 "127.0.0.1：3306",
+		User:                 "sicmouse_test",
+		Passwd:               "sicmousePwd2pWd2Pwd",
+		Addr:                 "test-sicmouse-db.mysql.rds.aliyuncs.com：3306",
 		Net:                  "tcp",
 		DBName:               "goblog",
 		AllowNativePasswords: true,
@@ -46,6 +46,16 @@ func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+func createTables() {
+	createArticlesSQL := `CREATE TABLE IF NOT EXISTS articles(
+    id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    body longtext COLLATE utf8mb4_unicode_ci
+); `
+
+	_, err := db.Exec(createArticlesSQL)
+	checkError(err)
 }
 
 // router := mux.NewRouter()
@@ -152,6 +162,7 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 }
 func main() {
 	initDB()
+	createTables()
 	// router := http.NewServeMux()
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
